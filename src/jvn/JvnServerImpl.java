@@ -1,0 +1,224 @@
+/***
+ * JAVANAISE Implementation
+ * JvnServerImpl class
+ * Contact: 
+ *
+ * Authors: 
+ */
+
+package jvn;
+
+import java.rmi.server.UnicastRemoteObject;
+import java.io.*;
+
+
+
+public class JvnServerImpl 	
+              extends UnicastRemoteObject 
+							implements JvnLocalServer, JvnRemoteServer{
+	
+  // A JVN server is managed as a singleton 
+	private static JvnServerImpl js = null;
+        // ajouter coordinateur : private static JvnCoordImpl coordinateur
+
+  /**
+  * Default constructor
+  * @throws JvnException
+  **/
+	private JvnServerImpl() throws Exception {
+		super();
+		// to be completed
+	}
+	
+  /**
+    * Static method allowing an application to get a reference to 
+    * a JVN server instance
+    * @throws JvnException
+    **/
+	public static JvnServerImpl jvnGetServer() {
+		if (js == null){
+			try {
+				js = new JvnServerImpl();
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return js;
+	}
+	
+	/**
+	* The JVN service is not used anymore
+	* @throws JvnException
+	**/
+	public  void jvnTerminate()
+	throws jvn.JvnException {
+            // to be completed 
+	} 
+	
+	/**
+	* creation of a JVN object
+	* @param o : the JVN object state
+	* @throws JvnException
+	**/
+	public  JvnObject jvnCreateObject(Serializable o)
+	throws jvn.JvnException { 
+            JvnObject jvnObject = new JvnObject() {
+                
+                private ValueOfLock valueOfLock = ValueOfLock.NL;
+                
+                @Override
+                public void jvnLockRead() throws JvnException {
+                    if(valueOfLock == ValueOfLock.NL){
+                        // demander droits de la donnée au coordinateur
+                        // TODO 
+                        valueOfLock = ValueOfLock.R;
+                    }
+                    else if (valueOfLock == ValueOfLock.RC || valueOfLock == ValueOfLock.R){
+                        valueOfLock = ValueOfLock.R;
+                    }
+                    else if (valueOfLock == ValueOfLock.WC || valueOfLock == ValueOfLock.W){
+                        valueOfLock = ValueOfLock.RWC;
+                    }
+                    // demander dernière version de la donnée au coordinateur
+                    // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public void jvnLockWrite() throws JvnException {
+                    if(valueOfLock == ValueOfLock.NL){
+                        // demander droits de la donnée au coordinateur
+                        valueOfLock = ValueOfLock.W;
+                    }
+                    else if (valueOfLock == ValueOfLock.RC || valueOfLock == ValueOfLock.R){
+                        // demander droits de la donnée au coordinateur
+                        valueOfLock = ValueOfLock.W;
+                    }
+                    else if (valueOfLock == ValueOfLock.WC || valueOfLock == ValueOfLock.W){
+                        valueOfLock = ValueOfLock.W;
+                    }
+                    // demander dernière version de la donnée au coordinateur
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public void jvnUnLock() throws JvnException {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public int jvnGetObjectId() throws JvnException {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public Serializable jvnGetObjectState() throws JvnException {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public void jvnInvalidateReader() throws JvnException {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public Serializable jvnInvalidateWriter() throws JvnException {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public Serializable jvnInvalidateWriterForReader() throws JvnException {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+            };
+            
+            // to be completed 
+            return jvnObject; 
+	}
+	
+	/**
+	*  Associate a symbolic name with a JVN object
+	* @param jon : the JVN object name
+	* @param jo : the JVN object 
+	* @throws JvnException
+	**/
+	public  void jvnRegisterObject(String jon, JvnObject jo)
+	throws jvn.JvnException {
+		// to be completed 
+	}
+	
+	/**
+	* Provide the reference of a JVN object beeing given its symbolic name
+	* @param jon : the JVN object name
+	* @return the JVN object 
+	* @throws JvnException
+	**/
+	public  JvnObject jvnLookupObject(String jon)
+	throws jvn.JvnException {
+    // to be completed 
+		return null;
+	}	
+	
+	/**
+	* Get a Read lock on a JVN object 
+	* @param joi : the JVN object identification
+	* @return the current JVN object state
+	* @throws  JvnException
+	**/
+   public Serializable jvnLockRead(int joi)
+	 throws JvnException {
+		// to be completed 
+		return null;
+
+	}	
+	/**
+	* Get a Write lock on a JVN object 
+	* @param joi : the JVN object identification
+	* @return the current JVN object state
+	* @throws  JvnException
+	**/
+   public Serializable jvnLockWrite(int joi)
+	 throws JvnException {
+		// to be completed 
+		return null;
+	}	
+
+	
+  /**
+	* Invalidate the Read lock of the JVN object identified by id 
+	* called by the JvnCoord
+	* @param joi : the JVN object id
+	* @return void
+	* @throws java.rmi.RemoteException,JvnException
+	**/
+  public void jvnInvalidateReader(int joi)
+	throws java.rmi.RemoteException,jvn.JvnException {
+		// to be completed 
+	};
+	    
+	/**
+	* Invalidate the Write lock of the JVN object identified by id 
+	* @param joi : the JVN object id
+	* @return the current JVN object state
+	* @throws java.rmi.RemoteException,JvnException
+	**/
+  public Serializable jvnInvalidateWriter(int joi)
+	throws java.rmi.RemoteException,jvn.JvnException { 
+		// to be completed 
+		return null;
+	};
+	
+	/**
+	* Reduce the Write lock of the JVN object identified by id 
+	* @param joi : the JVN object id
+	* @return the current JVN object state
+	* @throws java.rmi.RemoteException,JvnException
+	**/
+   public Serializable jvnInvalidateWriterForReader(int joi)
+	 throws java.rmi.RemoteException,jvn.JvnException { 
+		// to be completed 
+		return null;
+	 };
+
+}
+
+ 
