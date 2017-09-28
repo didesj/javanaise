@@ -10,6 +10,7 @@ package jvn;
 
 import java.rmi.server.UnicastRemoteObject;
 import java.io.Serializable;
+import java.util.List;
 
 
 public class JvnCoordImpl 	
@@ -17,6 +18,7 @@ public class JvnCoordImpl
 							implements JvnRemoteCoord{
     
     private int jvnObjectId = 0;
+    private List<JvnObject> jvnObjects;
 	
 
   /**
