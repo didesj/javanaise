@@ -83,7 +83,13 @@ public class ObjectEntryConsistency implements JvnObject{
 
     @Override
     public void jvnInvalidateReader() throws JvnException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (valueOfLock == ValueOfLock.RC){
+            valueOfLock = ValueOfLock.NL;
+        }
+        if(valueOfLock == ValueOfLock.R){
+            //wait();
+        }
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

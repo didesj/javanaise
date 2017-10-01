@@ -103,6 +103,8 @@ public class JvnServerImpl
 	**/
    public Serializable jvnLockRead(int joi)
 	 throws JvnException {
+                findJvnObjectById(joi).jvnLockRead();
+                // cord.jvnLockRead(joi, this);
 		// to be completed 
 		return null;
 
@@ -156,8 +158,12 @@ public class JvnServerImpl
 		return null;
 	 };
    
-   private JvnObject findJvnObjectById(int joi){
-       // TODO 
+   private JvnObject findJvnObjectById(int joi) throws JvnException{
+       for(JvnObject obj : jvnObjects){
+           if(joi == obj.jvnGetObjectId()){
+               return obj;
+           }
+       }
        return null;
    }
 
