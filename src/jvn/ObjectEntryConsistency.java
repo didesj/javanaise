@@ -66,6 +66,7 @@ public class ObjectEntryConsistency implements JvnObject{
         else if (valueOfLock == ValueOfLock.RWC){
             valueOfLock = ValueOfLock.WC;
         }
+        //notifyAll()
         // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -88,18 +89,35 @@ public class ObjectEntryConsistency implements JvnObject{
         }
         if(valueOfLock == ValueOfLock.R){
             //wait();
+            valueOfLock = ValueOfLock.NL;
         }
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Serializable jvnInvalidateWriter() throws JvnException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (valueOfLock == ValueOfLock.WC){
+            valueOfLock = ValueOfLock.NL;
+        }
+        if(valueOfLock == ValueOfLock.W){
+            //wait();
+            valueOfLock = ValueOfLock.NL;
+        }
+        return o;
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Serializable jvnInvalidateWriterForReader() throws JvnException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (valueOfLock == ValueOfLock.RWC){
+            valueOfLock = ValueOfLock.R;
+        }
+        if(valueOfLock == ValueOfLock.W){
+            //wait();
+            valueOfLock = ValueOfLock.R;
+        }
+        return o;
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     @Override
@@ -107,5 +125,6 @@ public class ObjectEntryConsistency implements JvnObject{
         // TODO 
         return null;
     }
+
            
 }

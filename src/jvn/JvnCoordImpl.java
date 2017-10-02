@@ -18,7 +18,7 @@ public class JvnCoordImpl
 							implements JvnRemoteCoord{
     
     private int jvnObjectId = 0;
-    private List<JvnObject> jvnObjects;
+    private List<ObjectCoord> listObjects;
 	
 
   /**
