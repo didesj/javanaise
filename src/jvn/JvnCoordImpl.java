@@ -19,6 +19,16 @@ public class JvnCoordImpl
     
     private int jvnObjectId = 0;
     private List<ObjectCoord> listObjects;
+    
+    public static void main(String args[]){
+        try{
+            JvnCoordImpl coordinateur = new JvnCoordImpl();
+            
+        }
+        catch(Exception e){
+            System.out.print(e.getMessage());
+        }
+    }
 	
 
   /**
