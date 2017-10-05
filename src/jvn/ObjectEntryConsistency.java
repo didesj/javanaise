@@ -22,6 +22,9 @@ public class ObjectEntryConsistency implements JvnObject{
         this.o = o;
     }
 
+    public boolean isLock() {
+    	return (valueOfLock  != ValueOfLock.NL);
+    }
     @Override
     public void jvnLockRead() throws JvnException {
         if(valueOfLock == ValueOfLock.NL){

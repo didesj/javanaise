@@ -8,8 +8,11 @@
 
 package jvn;
 
+import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.io.*;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -20,15 +23,21 @@ public class JvnServerImpl
 	
   // A JVN server is managed as a singleton 
 	private static JvnServerImpl js = null;
-        private List<JvnObject> jvnObjects;
+    private List<JvnObject> jvnObjects;
         // ajouter coordinateur : private static JvnCoordImpl coordinateur
-
+    private static JvnRemoteCoord server_coord ;
+    private Hashtable<String, Integer> table_hachage = new Hashtable<String, Integer>(); 
+    		
   /**
   * Default constructor
   * @throws JvnException
   **/
 	private JvnServerImpl() throws Exception {
 		super();
+		if(server_coord == null) {
+			server_coord = (JvnRemoteCoord) Naming.lookup("//localhost:2001/Coordinateur");
+		}
+
 		// to be completed
 	}
 	
@@ -64,11 +73,18 @@ public class JvnServerImpl
 	**/
 	public  JvnObject jvnCreateObject(Serializable o)
 	throws jvn.JvnException { 
-            int id = 0;// TODO : jvnCoordImpl.jvnGetObjectId()
+			int id = 0;
+			try {
+				id = server_coord.jvnGetObjectId();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            // TODO : jvnCoordImpl.jvnGetObjectId()
             JvnObject jvnObject = new ObjectEntryConsistency(id, o);
-               
+            //server
+            // to be complet	ed 
             
-            // to be completed 
             return jvnObject; 
 	}
 	
@@ -80,6 +96,19 @@ public class JvnServerImpl
 	**/
 	public  void jvnRegisterObject(String jon, JvnObject jo)
 	throws jvn.JvnException {
+		// suppose que l'objet n'existe pas encore dans la liste TODO
+		jvnObjects.add(jo);
+		
+		try {
+			server_coord.jvnRegisterObject(jon, jo, js);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//récpérer ID de l'objet 
+		int id_objet = jo.jvnGetObjectId();
+		
+		table_hachage.put(jon,id_objet);
 		// to be completed 
 	}
 	
@@ -92,8 +121,23 @@ public class JvnServerImpl
 	public  JvnObject jvnLookupObject(String jon)
 	throws jvn.JvnException {
     // to be completed 
+			try {
+				if(table_hachage.containsValue(jon)) { // 
+					JvnObject obj = findJvnObjectById(table_hachage.get(jon));
+					if( ((ObjectEntryConsistency) obj).isLock()) {
+						return obj;
+					}
+				}
+				return server_coord.jvnLookupObject(jon, js);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
+	
 		return null;
 	}	
+	
 	
 	/**
 	* Get a Read lock on a JVN object 
@@ -103,11 +147,18 @@ public class JvnServerImpl
 	**/
    public Serializable jvnLockRead(int joi)
 	 throws JvnException {
-                findJvnObjectById(joi).jvnLockRead();
-                // cord.jvnLockRead(joi, this);
-		// to be completed 
-		return null;
-
+		// to be completed
+	   Serializable obj = null ; 
+        try {
+			 obj = server_coord.jvnLockRead(joi, js);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        findJvnObjectById(joi).jvnLockRead(); // prendre le verroui
+        
+	return obj;
 	}	
 	/**
 	* Get a Write lock on a JVN object 
@@ -118,6 +169,12 @@ public class JvnServerImpl
    public Serializable jvnLockWrite(int joi)
 	 throws JvnException {
 		// to be completed 
+	   try {
+		server_coord.jvnLockWrite(joi, js);
+	} catch (RemoteException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 		return null;
 	}	
 
