@@ -14,21 +14,42 @@ import java.util.List;
  */
 public class ObjectCoord {
     
+    private String jon;
     private JvnObject obj;
     private JvnRemoteServer serverGotLockWrite;
     private List<JvnRemoteServer> serversGotLockRead;
 
-    public ObjectCoord(JvnObject obj) {
+    public ObjectCoord(String jon, JvnObject obj) {
+        this.jon = jon;
         this.obj = obj;
         this.serversGotLockRead = new ArrayList();
+    }
+    
+    public String getJon(){
+        return this.jon;
     }
 
     public JvnObject getObj() {
         return obj;
     }
+    
+    public int getId() throws JvnException{
+        return obj.jvnGetObjectId();
+    }
 
     public void setObj(JvnObject obj) {
         this.obj = obj;
+    }
+    
+    public boolean isServerLockWrite(){
+        if(serverGotLockWrite == null){
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean isServerLockRead(){
+        return (!serversGotLockRead.isEmpty());
     }
 
     public JvnRemoteServer getServerGotLockWrite() {
@@ -37,8 +58,7 @@ public class ObjectCoord {
     
     public void SetServerGotLockWriteNull() {
         serverGotLockWrite = null;
-    }
-     
+    }   
     
     public void setServerGotLockWrite(JvnRemoteServer serverGotLockWrite) {
         this.serverGotLockWrite = serverGotLockWrite;
