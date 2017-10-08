@@ -28,8 +28,8 @@ public class JvnCoordImpl
         try{
             JvnRemoteCoord coordinateur = new JvnCoordImpl();
             
-            LocateRegistry.createRegistry(2001);
-            Naming.bind("//localhost:2001/Coordinateur", coordinateur);
+            LocateRegistry.createRegistry(2045);
+            Naming.bind("//localhost:2045/Coordinateur", coordinateur);
             
         }
         catch(Exception e){
