@@ -12,6 +12,7 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -35,9 +36,9 @@ public class JvnServerImpl
 	private JvnServerImpl() throws Exception {
 		super();
 		if(server_coord == null) {
-			server_coord = (JvnRemoteCoord) Naming.lookup("//localhost:2001/Coordinateur");
+			server_coord = (JvnRemoteCoord) Naming.lookup("//localhost:2045/Coordinateur");
 		}
-
+		jvnObjects = new ArrayList<JvnObject>();
 		// to be completed
 	}
 	
@@ -96,15 +97,20 @@ public class JvnServerImpl
 	**/
 	public  void jvnRegisterObject(String jon, JvnObject jo)
 	throws jvn.JvnException {
+		System.out.println("YO");
 		// suppose que l'objet n'existe pas encore dans la liste TODO
 		jvnObjects.add(jo);
 		
 		try {
 			server_coord.jvnRegisterObject(jon, jo, js);
 		} catch (RemoteException e) {
+			System.out.println("CATCH : "+e.getMessage());
+
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("APRES CATCH : ");
+
 		//récpérer ID de l'objet 
 		int id_objet = jo.jvnGetObjectId();
 		
