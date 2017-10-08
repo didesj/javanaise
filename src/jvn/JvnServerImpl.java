@@ -73,19 +73,19 @@ public class JvnServerImpl
 	**/
 	public  JvnObject jvnCreateObject(Serializable o)
 	throws jvn.JvnException { 
-			int id = 0;
-			try {
-				id = server_coord.jvnGetObjectId();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            // TODO : jvnCoordImpl.jvnGetObjectId()
-            JvnObject jvnObject = new ObjectEntryConsistency(id, o);
-            //server
-            // to be complet	ed 
-            
-            return jvnObject; 
+                int id = 0;
+                try {
+                    id = server_coord.jvnGetObjectId();
+                } catch (RemoteException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                // TODO : jvnCoordImpl.jvnGetObjectId()
+                JvnObject jvnObject = new ObjectEntryConsistency(id, o);
+                //server
+                // to be complet	ed
+
+                return jvnObject;
 	}
 	
 	/**
