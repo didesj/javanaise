@@ -69,7 +69,11 @@ public class JvnCoordImpl
   throws java.rmi.RemoteException,jvn.JvnException{
     // TODO : vérifier si le nom est unique
     listObjects.add(new ObjectCoord(jon, jo));
+	System.out.println("REgistrer Object ");
+
     listRemoteServer.add(js);
+	System.out.println("REgistrer Object add ");
+
   }
   
   
@@ -81,8 +85,9 @@ public class JvnCoordImpl
   **/
   public JvnObject jvnLookupObject(String jon, JvnRemoteServer js)
   throws java.rmi.RemoteException,jvn.JvnException{
+	System.out.println("Object cherché "+jon);
     for(ObjectCoord obj : listObjects){
-        if(jon == obj.getJon()){
+        if(jon.equals(obj.getJon())){
             JvnObject jvnObject = obj.getObj();
             int idJvnObject = jvnObject.jvnGetObjectId();
             if(obj.isServerLockWrite()){
@@ -91,6 +96,7 @@ public class JvnCoordImpl
             else{
                 jvnObject = new ObjectEntryConsistency(idJvnObject, jvnObject.jvnGetObjectState());
             }
+            System.out.println("Objet trouvé et envoyé");
             return jvnObject;
         }
     }

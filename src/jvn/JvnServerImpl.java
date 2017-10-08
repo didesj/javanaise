@@ -26,7 +26,7 @@ public class JvnServerImpl
 	private static JvnServerImpl js = null;
     private List<JvnObject> jvnObjects;
         // ajouter coordinateur : private static JvnCoordImpl coordinateur
-    private static JvnRemoteCoord server_coord ;
+    private JvnRemoteCoord server_coord ;
     private Hashtable<String, Integer> table_hachage = new Hashtable<String, Integer>(); 
     		
   /**
@@ -37,6 +37,7 @@ public class JvnServerImpl
 		super();
 		if(server_coord == null) {
 			server_coord = (JvnRemoteCoord) Naming.lookup("//localhost:2045/Coordinateur");
+			
 		}
 		jvnObjects = new ArrayList<JvnObject>();
 		// to be completed
@@ -109,7 +110,6 @@ public class JvnServerImpl
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("APRES CATCH : ");
 
 		//récpérer ID de l'objet 
 		int id_objet = jo.jvnGetObjectId();
@@ -131,9 +131,11 @@ public class JvnServerImpl
 				if(table_hachage.containsValue(jon)) { // 
 					JvnObject obj = findJvnObjectById(table_hachage.get(jon));
 					if( ((ObjectEntryConsistency) obj).isLock()) {
+						System.out.println("ERREUR");
 						return obj;
 					}
 				}
+				System.out.println("Avant return ");
 				return server_coord.jvnLookupObject(jon, js);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
