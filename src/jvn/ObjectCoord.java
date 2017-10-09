@@ -22,9 +22,9 @@ public class ObjectCoord {
     public ObjectCoord(String jon, JvnObject obj) {
         this.jon = jon;
         this.obj = obj;
-        this.serversGotLockRead = new ArrayList();
+        this.serversGotLockRead = new ArrayList<JvnRemoteServer>();
     }
-    
+     
     public String getJon(){
         return this.jon;
     }
