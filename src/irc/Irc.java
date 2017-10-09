@@ -39,10 +39,12 @@ public class Irc {
 		
 		if (jo == null) {
 			jo = js.jvnCreateObject((Serializable) new Sentence());
+			System.out.println("objet crée");
 			// after creation, I have a write lock on the object
 			jo.jvnUnLock();
 			System.out.println(jo);
 			js.jvnRegisterObject("IRC", jo);
+			System.out.println("objet enregistré");
 
 		}
 		// create the graphical part of the Chat application
@@ -113,7 +115,7 @@ public class Irc {
 	   }
 	}
 }
-
+ 
  /**
   * Internal class to manage user events (write) on the CHAT application
   **/

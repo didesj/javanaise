@@ -75,19 +75,18 @@ public class JvnServerImpl
 	**/
 	public  JvnObject jvnCreateObject(Serializable o)
 	throws jvn.JvnException { 
-                int id = 0;
-                try {
-                    id = server_coord.jvnGetObjectId();
-                } catch (RemoteException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                // TODO : jvnCoordImpl.jvnGetObjectId()
-                JvnObject jvnObject = new ObjectEntryConsistency(id, o);
-                //server
-                // to be complet	ed
-
-                return jvnObject;
+			int id = 0;
+			try {
+				id = server_coord.jvnGetObjectId();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            JvnObject jvnObject = new ObjectEntryConsistency(id, o);
+            //server
+            // to be complet	ed 
+            
+            return jvnObject; 
 	}
 	
 	/**
@@ -101,9 +100,12 @@ public class JvnServerImpl
 		System.out.println("YO");
 		// suppose que l'objet n'existe pas encore dans la liste TODO
 		jvnObjects.add(jo);
-		
+		System.out.println("add object");
+
 		try {
 			server_coord.jvnRegisterObject(jon, jo, js);
+			System.out.println("objet enregistré du coordinateur");
+
 		} catch (RemoteException e) {
 			System.out.println("CATCH : "+e.getMessage());
 
@@ -156,15 +158,23 @@ public class JvnServerImpl
    public Serializable jvnLockRead(int joi)
 	 throws JvnException {
 		// to be completed
+
+   	System.out.println("jvnLockRead dans serveur");
+
 	   Serializable obj = null ; 
-        try {
-			 obj = server_coord.jvnLockRead(joi, js);
+	   System.out.println("Coordinateur : "+ server_coord);
+		 try {
+			obj = server_coord.jvnLockRead(joi, this);
+			
+			if(findJvnObjectById(joi) == null) {
+				jvnObjects.add(new ObjectEntryConsistency(joi, obj));
+			}
+			   System.out.println("Coordinateur Try : "+obj);
+
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-        findJvnObjectById(joi).jvnLockRead(); // prendre le verroui
         
 	return obj;
 	}	
@@ -177,13 +187,17 @@ public class JvnServerImpl
    public Serializable jvnLockWrite(int joi)
 	 throws JvnException {
 		// to be completed 
+	   Serializable obj = null;
 	   try {
-		server_coord.jvnLockWrite(joi, js);
+		   	obj = server_coord.jvnLockWrite(joi, this);
+			if(findJvnObjectById(joi) == null) {
+				jvnObjects.add(new ObjectEntryConsistency(joi, obj));
+			}
 	} catch (RemoteException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-		return null;
+		return obj;
 	}	
 
 	
@@ -196,7 +210,8 @@ public class JvnServerImpl
 	**/
   public void jvnInvalidateReader(int joi)
 	throws java.rmi.RemoteException,jvn.JvnException {
-		// to be completed 
+		findJvnObjectById(joi).jvnInvalidateReader();
+	  
 	};
 	    
 	/**
@@ -208,7 +223,7 @@ public class JvnServerImpl
   public Serializable jvnInvalidateWriter(int joi)
 	throws java.rmi.RemoteException,jvn.JvnException { 
 		// to be completed 
-		return null;
+		return findJvnObjectById(joi).jvnInvalidateWriter();
 	};
 	
 	/**
@@ -220,14 +235,14 @@ public class JvnServerImpl
    public Serializable jvnInvalidateWriterForReader(int joi)
 	 throws java.rmi.RemoteException,jvn.JvnException { 
 		// to be completed 
-		return null;
+		return findJvnObjectById(joi).jvnInvalidateWriterForReader();
 	 };
    
    private JvnObject findJvnObjectById(int joi) throws JvnException{
        for(JvnObject obj : jvnObjects){
            if(joi == obj.jvnGetObjectId()){
                return obj;
-           }
+           } 
        }
        return null;
    }

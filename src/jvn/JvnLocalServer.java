@@ -14,7 +14,7 @@ import java.io.Serializable;
  * method jvnGetServer() (see  JvnServerImpl). 
  */
 
-public interface JvnLocalServer {
+public interface JvnLocalServer extends Serializable{
 	
 	/**
 	* create of a JVN object
