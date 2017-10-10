@@ -134,9 +134,11 @@ public class JvnCoordImpl
   **/
    public Serializable jvnLockWrite(int joi, JvnRemoteServer js)
    throws java.rmi.RemoteException, JvnException{
+	   System.out.println("jvnLockWrite du coordinateur");
     ObjectCoord obj = findObjectCoordById(joi);
     Serializable objectMAJ = obj.getObj().jvnGetObjectState();
     if(obj.isServerLockWrite()){
+    		System.out.println("Je met à jour la donnée !!!");
         JvnRemoteServer serverLockWrite = obj.getServerGotLockWrite();
         objectMAJ = serverLockWrite.jvnInvalidateWriter(joi);
     }
