@@ -114,13 +114,14 @@ public class ObjectEntryConsistency implements JvnObject{
     @Override
     public Serializable jvnInvalidateWriter() throws JvnException {
     		System.out.println("avant jvnInvalidateWriter valuOfLock : " + valueOfLock);
-        if (valueOfLock == ValueOfLock.WC){
+        if (valueOfLock == ValueOfLock.WC || valueOfLock == ValueOfLock.RC){
             valueOfLock = ValueOfLock.NL;
         }
-        if(valueOfLock == ValueOfLock.W){
+        if(valueOfLock == ValueOfLock.W || valueOfLock == ValueOfLock.R){
             //wait();
             valueOfLock = ValueOfLock.NL;
         }
+        //o = JvnServerImpl.jvnGetServer().jvnLockWrite(id);
         System.out.println("après jvnInvalidateWriter valuOfLock : " + valueOfLock);
         return o;
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -137,8 +138,9 @@ public class ObjectEntryConsistency implements JvnObject{
             valueOfLock = ValueOfLock.RC;
         }
         if(valueOfLock == ValueOfLock.WC) {
-        	valueOfLock = ValueOfLock.RC;
+        		valueOfLock = ValueOfLock.RC;
         }
+        //o = JvnServerImpl.jvnGetServer().jvnLockRead(id);
         System.out.println("après jvnInvalidateWriterForReader valuOfLock : " + valueOfLock);
         return o;
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

@@ -93,14 +93,17 @@ public class JvnCoordImpl
             int idJvnObject = jvnObject.jvnGetObjectId();
             if(obj.isServerLockWrite()){
                 jvnObject = new ObjectEntryConsistency(idJvnObject, js.jvnInvalidateWriterForReader(idJvnObject));
+                listObjects.remove(obj);
+                listObjects.add(new ObjectCoord(jon, jvnObject));
             }
-            else{
-                jvnObject = new ObjectEntryConsistency(idJvnObject, jvnObject.jvnGetObjectState());
-            }
+            //else{
+            //    jvnObject = new ObjectEntryConsistency(idJvnObject, jvnObject.jvnGetObjectState());
+            //}
             System.out.println("Objet trouvé et envoyé");
             return jvnObject;
         }
     }
+    System.out.println("lookup termine dans coord !");
     return null;
   }
   
@@ -117,8 +120,9 @@ public class JvnCoordImpl
     ObjectCoord obj = findObjectCoordById(joi);
     Serializable objectMAJ = obj.getObj().jvnGetObjectState();
     if(obj.isServerLockWrite()){
-    	System.out.println("Lock Read Coord");
+    		System.out.println("Lock Read Coord");
         JvnRemoteServer serverLockWrite = obj.getServerGotLockWrite();
+        System.out.println("le server demandeur == server avec le lock ? : " + (js == serverLockWrite));
         objectMAJ = serverLockWrite.jvnInvalidateWriterForReader(joi);
     }
     obj.addServersGotLockRead(js);

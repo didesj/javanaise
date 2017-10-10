@@ -24,10 +24,10 @@ public class JvnServerImpl
 	
   // A JVN server is managed as a singleton 
 	private static JvnServerImpl js = null;
-    private List<JvnObject> jvnObjects;
+    private Hashtable<Integer, JvnObject> jvnObjects;
         // ajouter coordinateur : private static JvnCoordImpl coordinateur
     private JvnRemoteCoord server_coord ;
-    private Hashtable<String, Integer> table_hachage = new Hashtable<String, Integer>(); 
+    private Hashtable<String, Integer> hachNameId; 
     		
   /**
   * Default constructor
@@ -39,7 +39,8 @@ public class JvnServerImpl
 			server_coord = (JvnRemoteCoord) Naming.lookup("//localhost:2045/Coordinateur");
 			
 		}
-		jvnObjects = new ArrayList<JvnObject>();
+		this.hachNameId = new Hashtable<String, Integer>();
+		this.jvnObjects = new Hashtable<Integer, JvnObject>();
 		// to be completed
 	}
 	
@@ -97,9 +98,9 @@ public class JvnServerImpl
 	**/
 	public  void jvnRegisterObject(String jon, JvnObject jo)
 	throws jvn.JvnException {
-		System.out.println("YO");
+		System.out.println("jo ?" + jo);
 		// suppose que l'objet n'existe pas encore dans la liste TODO
-		jvnObjects.add(jo);
+		jvnObjects.put(jo.jvnGetObjectId(), jo);
 		System.out.println("add object");
 
 		try {
@@ -116,7 +117,7 @@ public class JvnServerImpl
 		//récpérer ID de l'objet 
 		int id_objet = jo.jvnGetObjectId();
 		
-		table_hachage.put(jon,id_objet);
+		hachNameId.put(jon,id_objet);
 		// to be completed 
 	}
 	
@@ -130,17 +131,21 @@ public class JvnServerImpl
 	throws jvn.JvnException {
     // to be completed 
 			try {
-				if(table_hachage.containsValue(jon)) { // 
-					JvnObject obj = findJvnObjectById(table_hachage.get(jon));
+				if(hachNameId.containsValue(jon)) { // 
+					JvnObject obj = jvnObjects.get(hachNameId.get(jon));
 					if( ((ObjectEntryConsistency) obj).isLock()) {
 						System.out.println("ERREUR");
 						return obj;
 					}
 				}
 				System.out.println("Avant return ");
-				return server_coord.jvnLookupObject(jon, js);
+				JvnObject objLookUp = server_coord.jvnLookupObject(jon, js);
+				if(objLookUp != null) {
+					jvnObjects.put(objLookUp.jvnGetObjectId(), objLookUp);
+				}
+				return objLookUp;
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
+				System.out.println("erreur : " + e.getMessage());
 				e.printStackTrace();
 			}
 	
@@ -164,11 +169,12 @@ public class JvnServerImpl
 	   Serializable obj = null ; 
 	   System.out.println("Coordinateur : "+ server_coord);
 		 try {
-			obj = server_coord.jvnLockRead(joi, this);
+			obj = server_coord.jvnLockRead(joi, js);
 			
-			if(findJvnObjectById(joi) == null) {
-				jvnObjects.add(new ObjectEntryConsistency(joi, obj));
-			}
+			//if(findJvnObjectById(joi) == null) {
+				//System.out.println("ERREUR");
+				//jvnObjects.add(new ObjectEntryConsistency(joi, obj));
+			//}
 			   System.out.println("Coordinateur Try : "+obj);
 
 		} catch (RemoteException e) {
@@ -190,9 +196,10 @@ public class JvnServerImpl
 	   Serializable obj = null;
 	   try {
 		   	obj = server_coord.jvnLockWrite(joi, this);
-			if(findJvnObjectById(joi) == null) {
-				jvnObjects.add(new ObjectEntryConsistency(joi, obj));
-			}
+			//if(findJvnObjectById(joi) == null) {
+				//System.out.println("ERREUR");
+				//jvnObjects.add(new ObjectEntryConsistency(joi, obj));
+			//}
 	} catch (RemoteException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -210,7 +217,7 @@ public class JvnServerImpl
 	**/
   public void jvnInvalidateReader(int joi)
 	throws java.rmi.RemoteException,jvn.JvnException {
-		findJvnObjectById(joi).jvnInvalidateReader();
+		jvnObjects.get(joi).jvnInvalidateReader();
 	  
 	};
 	    
@@ -223,7 +230,7 @@ public class JvnServerImpl
   public Serializable jvnInvalidateWriter(int joi)
 	throws java.rmi.RemoteException,jvn.JvnException { 
 		// to be completed 
-		return findJvnObjectById(joi).jvnInvalidateWriter();
+		return jvnObjects.get(joi).jvnInvalidateWriter();
 	};
 	
 	/**
@@ -235,17 +242,8 @@ public class JvnServerImpl
    public Serializable jvnInvalidateWriterForReader(int joi)
 	 throws java.rmi.RemoteException,jvn.JvnException { 
 		// to be completed 
-		return findJvnObjectById(joi).jvnInvalidateWriterForReader();
+		return jvnObjects.get(joi).jvnInvalidateWriterForReader();
 	 };
-   
-   private JvnObject findJvnObjectById(int joi) throws JvnException{
-       for(JvnObject obj : jvnObjects){
-           if(joi == obj.jvnGetObjectId()){
-               return obj;
-           } 
-       }
-       return null;
-   }
 
 }
 
