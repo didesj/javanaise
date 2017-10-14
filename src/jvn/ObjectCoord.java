@@ -56,7 +56,7 @@ public class ObjectCoord {
         return serverGotLockWrite;
     }
     
-    public void SetServerGotLockWriteNull() {
+    public void setServerGotLockWriteNull() {
         serverGotLockWrite = null;
     }   
     

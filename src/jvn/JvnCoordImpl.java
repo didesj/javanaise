@@ -92,9 +92,12 @@ public class JvnCoordImpl
             JvnObject jvnObject = obj.getObj();
             int idJvnObject = jvnObject.jvnGetObjectId();
             if(obj.isServerLockWrite()){
-                jvnObject = new ObjectEntryConsistency(idJvnObject, js.jvnInvalidateWriterForReader(idJvnObject));
-                listObjects.remove(obj);
-                listObjects.add(new ObjectCoord(jon, jvnObject));
+                jvnObject = new ObjectEntryConsistency(idJvnObject, obj.getServerGotLockWrite().jvnInvalidateWriterForReader(idJvnObject));
+                obj.setObj(jvnObject);
+                obj.addServersGotLockRead(obj.getServerGotLockWrite());
+                obj.setServerGotLockWriteNull();
+                //listObjects.remove(obj);
+                //listObjects.add(new ObjectCoord(jon, jvnObject));
             }
             //else{
             //    jvnObject = new ObjectEntryConsistency(idJvnObject, jvnObject.jvnGetObjectState());
@@ -103,7 +106,7 @@ public class JvnCoordImpl
             return jvnObject;
         }
     }
-    System.out.println("lookup termine dans coord !");
+    System.out.println("lookup termine dans coord et Objet non trouvé !");
     return null;
   }
   
@@ -124,6 +127,9 @@ public class JvnCoordImpl
         JvnRemoteServer serverLockWrite = obj.getServerGotLockWrite();
         System.out.println("le server demandeur == server avec le lock ? : " + (js == serverLockWrite));
         objectMAJ = serverLockWrite.jvnInvalidateWriterForReader(joi);
+        obj.addServersGotLockRead(serverLockWrite);
+        obj.setServerGotLockWriteNull();
+        obj.setObj(new ObjectEntryConsistency(joi, objectMAJ));
     }
     obj.addServersGotLockRead(js);
     return objectMAJ;
@@ -145,11 +151,18 @@ public class JvnCoordImpl
     		System.out.println("Je met à jour la donnée !!!");
         JvnRemoteServer serverLockWrite = obj.getServerGotLockWrite();
         objectMAJ = serverLockWrite.jvnInvalidateWriter(joi);
+        obj.setServerGotLockWriteNull();
+        obj.setObj(new ObjectEntryConsistency(joi, objectMAJ));
     }
     if(obj.isServerLockRead()){
         for(JvnRemoteServer jrs : obj.getServersGotLockRead()){
-            jrs.jvnInvalidateReader(joi);
+        		System.out.println("le serveur qui veux le lockWrite veux s'invalider e lockRead : "+ (jrs != js));
+        		// Je pense que le problème vien d'ici !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! la condition jrs != js ne fonctionne pas !! 
+        		if(jrs != js) {
+        			jrs.jvnInvalidateReader(joi);
+        		}
         }
+        obj.setServersGotLockReadNull();
     }
     obj.setServerGotLockWrite(js);
     return objectMAJ;
