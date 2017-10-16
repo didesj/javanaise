@@ -25,7 +25,6 @@ public class JvnServerImpl
   // A JVN server is managed as a singleton 
 	private static JvnServerImpl js = null;
     private Hashtable<Integer, JvnObject> jvnObjects;
-        // ajouter coordinateur : private static JvnCoordImpl coordinateur
     private JvnRemoteCoord server_coord ;
     private Hashtable<String, Integer> hachNameId; 
     		

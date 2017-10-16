@@ -96,12 +96,7 @@ public class JvnCoordImpl
                 obj.setObj(jvnObject);
                 obj.addServersGotLockRead(obj.getServerGotLockWrite());
                 obj.setServerGotLockWriteNull();
-                //listObjects.remove(obj);
-                //listObjects.add(new ObjectCoord(jon, jvnObject));
             }
-            //else{
-            //    jvnObject = new ObjectEntryConsistency(idJvnObject, jvnObject.jvnGetObjectState());
-            //}
             System.out.println("Objet trouvé et envoyé");
             return jvnObject;
         }
@@ -156,9 +151,8 @@ public class JvnCoordImpl
     }
     if(obj.isServerLockRead()){
         for(JvnRemoteServer jrs : obj.getServersGotLockRead()){
-        		System.out.println("le serveur qui veux le lockWrite veux s'invalider e lockRead : "+ (jrs != js));
-        		// Je pense que le problème vien d'ici !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! la condition jrs != js ne fonctionne pas !! 
-        		if(jrs != js) {
+        		// System.out.println("le serveur qui veux le lockWrite veux s'invalider e lockRead : "+ !(jrs.equals(js))); 
+        		if(!(jrs.equals(js))) {
         			jrs.jvnInvalidateReader(joi);
         		}
         }
