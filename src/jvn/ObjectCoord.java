@@ -14,19 +14,13 @@ import java.util.List;
  */
 public class ObjectCoord {
     
-    private String jon;
     private JvnObject obj;
     private JvnRemoteServer serverGotLockWrite;
     private List<JvnRemoteServer> serversGotLockRead;
 
-    public ObjectCoord(String jon, JvnObject obj) {
-        this.jon = jon;
+    public ObjectCoord(JvnObject obj) {
         this.obj = obj;
         this.serversGotLockRead = new ArrayList<JvnRemoteServer>();
-    }
-     
-    public String getJon(){
-        return this.jon;
     }
 
     public JvnObject getObj() {

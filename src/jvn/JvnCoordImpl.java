@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -21,8 +22,8 @@ public class JvnCoordImpl
 							implements JvnRemoteCoord{
     
     private int jvnObjectId = 0;
-    private List<ObjectCoord> listObjects;
-    private List<JvnRemoteServer> listRemoteServer;
+    private Hashtable<Integer, ObjectCoord> listObjectsById;
+    private Hashtable<String, ObjectCoord> listObjectsByJon;
     
     public static void main(String args[]){
         try{
@@ -33,8 +34,9 @@ public class JvnCoordImpl
             
         }
         catch(Exception e){
-            System.out.print(e.getMessage());
+            System.out.print("erreur :"+e.getMessage());
         }
+        System.out.println("coord cree");
     }
 	
 
@@ -43,8 +45,8 @@ public class JvnCoordImpl
   * @throws JvnException
   **/
 	private JvnCoordImpl() throws Exception {
-		this.listObjects = new ArrayList<ObjectCoord>();
-                this.listRemoteServer = new ArrayList<JvnRemoteServer>();
+		this.listObjectsById = new Hashtable<Integer, ObjectCoord>();
+		this.listObjectsByJon = new Hashtable<String, ObjectCoord>();
 	}
 
   /**
@@ -68,12 +70,11 @@ public class JvnCoordImpl
   public void jvnRegisterObject(String jon, JvnObject jo, JvnRemoteServer js)
   throws java.rmi.RemoteException,jvn.JvnException{
     // TODO : vérifier si le nom est unique
-	
-    listObjects.add(new ObjectCoord(jon, jo));
-	System.out.println("REgistrer Object ");
-
-    listRemoteServer.add(js);
-	System.out.println("REgistrer Object add ");
+	ObjectCoord objCoord = new ObjectCoord(jo);
+	listObjectsById.put(jo.jvnGetObjectId(), objCoord);
+	listObjectsByJon.put(jon, objCoord);
+    //listObjects.add(new ObjectCoord(jon, jo));
+	System.out.println("Registrer Object ");
 
   }
   
@@ -87,19 +88,18 @@ public class JvnCoordImpl
   public JvnObject jvnLookupObject(String jon, JvnRemoteServer js)
   throws java.rmi.RemoteException,jvn.JvnException{
 	System.out.println("Object cherché "+jon);
-    for(ObjectCoord obj : listObjects){
-        if(jon.equals(obj.getJon())){
-            JvnObject jvnObject = obj.getObj();
-            int idJvnObject = jvnObject.jvnGetObjectId();
-            if(obj.isServerLockWrite()){
-                jvnObject = new ObjectEntryConsistency(idJvnObject, obj.getServerGotLockWrite().jvnInvalidateWriterForReader(idJvnObject));
-                obj.setObj(jvnObject);
-                obj.addServersGotLockRead(obj.getServerGotLockWrite());
-                obj.setServerGotLockWriteNull();
-            }
-            System.out.println("Objet trouvé et envoyé");
-            return jvnObject;
+    if(listObjectsByJon.containsKey(jon)){
+    		ObjectCoord obj = listObjectsByJon.get(jon);
+        JvnObject jvnObject = obj.getObj();
+        int idJvnObject = jvnObject.jvnGetObjectId();
+        if(obj.isServerLockWrite()){
+            jvnObject = new ObjectEntryConsistency(idJvnObject, obj.getServerGotLockWrite().jvnInvalidateWriterForReader(idJvnObject));
+            obj.setObj(jvnObject);
+            obj.addServersGotLockRead(obj.getServerGotLockWrite());
+            obj.setServerGotLockWriteNull();
         }
+        System.out.println("Objet trouvé et envoyé");
+        return jvnObject;
     }
     System.out.println("lookup termine dans coord et Objet non trouvé !");
     return null;
@@ -115,7 +115,7 @@ public class JvnCoordImpl
    public Serializable jvnLockRead(int joi, JvnRemoteServer js)
    throws java.rmi.RemoteException, JvnException{
 		System.out.println("jvnLockRead du coordianteur");
-    ObjectCoord obj = findObjectCoordById(joi);
+    ObjectCoord obj = listObjectsById.get(joi);
     Serializable objectMAJ = obj.getObj().jvnGetObjectState();
     if(obj.isServerLockWrite()){
     		System.out.println("Lock Read Coord");
@@ -140,7 +140,7 @@ public class JvnCoordImpl
    public Serializable jvnLockWrite(int joi, JvnRemoteServer js)
    throws java.rmi.RemoteException, JvnException{
 	   System.out.println("jvnLockWrite du coordinateur");
-    ObjectCoord obj = findObjectCoordById(joi);
+    ObjectCoord obj = listObjectsById.get(joi);
     Serializable objectMAJ = obj.getObj().jvnGetObjectState();
     if(obj.isServerLockWrite()){
     		System.out.println("Je met à jour la donnée !!!");
@@ -170,17 +170,6 @@ public class JvnCoordImpl
     public void jvnTerminate(JvnRemoteServer js)
 	 throws java.rmi.RemoteException, JvnException {
 	 // TODO : to be completed
-    }
-    
-    private ObjectCoord findObjectCoordById(int joi) throws JvnException{
-    	System.out.println("findObjectCoordById");
-        for(ObjectCoord obj : listObjects){
-            if(obj.getId() == joi){
-            	System.out.println("jvnObject trouvé avec joi : "+joi);
-                return obj;
-            }
-        }
-        throw new JvnException("Objet non trouvé !!!");
     }
 }
  

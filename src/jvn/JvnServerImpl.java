@@ -36,7 +36,6 @@ public class JvnServerImpl
 		super();
 		if(server_coord == null) {
 			server_coord = (JvnRemoteCoord) Naming.lookup("//localhost:2045/Coordinateur");
-			
 		}
 		this.hachNameId = new Hashtable<String, Integer>();
 		this.jvnObjects = new Hashtable<Integer, JvnObject>();
