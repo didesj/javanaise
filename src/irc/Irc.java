@@ -11,15 +11,16 @@ import java.awt.*;
 import java.awt.event.*;
 
 
-import jvn.JvnProxy;
+
 import java.io.*;
+
+import jvn.JvnProxy;
 
 
 public class Irc {
 	public TextArea		text;
 	public TextField	data;
 	Frame 			frame;
-	//JvnObject       sentence;
 	ISentence sentence;
 
 
@@ -41,8 +42,8 @@ public class Irc {
    * IRC Constructor
    @param jo the JVN object representing the Chat
    **/
-	public Irc(ISentence jo) {
-		sentence = jo;
+	public Irc(ISentence s) {
+		sentence = s;
 		frame=new Frame();
 		frame.setLayout(new GridLayout(1,1));
 		text=new TextArea(10,60);
@@ -57,9 +58,6 @@ public class Irc {
 		Button write_button = new Button("write");
 		write_button.addActionListener(new writeListener(this));
 		frame.add(write_button);
-		//Button unlock_button = new Button("unlock");
-		//unlock_button.addActionListener(new unLockListener(this));
-		//frame.add(unlock_button);
 		frame.setSize(545,201);
 		text.setBackground(Color.black); 
 		frame.setVisible(true);
@@ -81,23 +79,11 @@ public class Irc {
   * Management of user events
   **/
 	public void actionPerformed (ActionEvent e) {
-	// try {
-		/*// lock the object in read mode
-		irc.sentence.jvnLockRead();
-		
 		// invoke the method
-		String s = ((Sentence)(irc.sentence.jvnGetObjectState())).read();
-		
-		// unlock the object
-		//irc.sentence.jvnUnLock();
-		*/
 		 String s = irc.sentence.read();
 		// display the read value
 		irc.data.setText(s);
 		irc.text.append(s+"\n");
-	   //} catch (JvnException je) {
-		  // System.out.println("IRC problem : " + je.getMessage());
-	   //}
 	}
 }
  
@@ -115,52 +101,9 @@ public class Irc {
     * Management of user events
    **/
 	public void actionPerformed (ActionEvent e) {
-	   /*try {	
-		// get the value to be written from the buffer
-    String s = irc.data.getText();
-        	
-    // lock the object in write mode
-		irc.sentence.jvnLockWrite();
-		
-		// invoke the method
-		((Sentence)(irc.sentence.jvnGetObjectState())).write(s);
-		
-		// unlock the object
-		//irc.sentence.jvnUnLock();
-	 } catch (JvnException je) {
-		   System.out.println("IRC problem  : " + je.getMessage());
-	 }
-	 */
 		String s = irc.data.getText();
 		irc.sentence.write(s);
 	}
 }
- 
- /**
-  * Internal class to manage user events (read) on the CHAT application
-  **/
- class unLockListener implements ActionListener {
-	Irc irc;
-  
-	public unLockListener (Irc i) {
-		irc = i;
-	}
-   
- /**
-  * Management of user events
-  **/
-	public void actionPerformed (ActionEvent e) {
-	 /*try {
-		
-		// unlock the object
-		irc.sentence.jvnUnLock();
-
-	   } catch (JvnException je) {
-		   System.out.println("IRC problem : " + je.getMessage());
-	   }
-	   */
-	}
-}
-
 
 

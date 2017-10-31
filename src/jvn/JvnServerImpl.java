@@ -24,7 +24,8 @@ public class JvnServerImpl
 	
   // A JVN server is managed as a singleton 
 	private static JvnServerImpl js = null;
-    private Hashtable<Integer, JvnObject> jvnObjects;
+    // private Hashtable<Integer, JvnObject> jvnObjects;
+    private Hashtable<Integer, CacheObject> jvnObjects;
     private JvnRemoteCoord server_coord ;
     private Hashtable<String, Integer> hachNameId; 
     		
@@ -38,7 +39,8 @@ public class JvnServerImpl
 			server_coord = (JvnRemoteCoord) Naming.lookup("//localhost:2045/Coordinateur");
 		}
 		this.hachNameId = new Hashtable<String, Integer>();
-		this.jvnObjects = new Hashtable<Integer, JvnObject>();
+		// this.jvnObjects = new Hashtable<Integer, JvnObject>();
+		this.jvnObjects = new Hashtable<Integer, CacheObject>();
 		// to be completed
 	}
 	
@@ -97,8 +99,10 @@ public class JvnServerImpl
 	public  void jvnRegisterObject(String jon, JvnObject jo)
 	throws jvn.JvnException {
 		System.out.println("jo ?" + jo);
+		CacheObject co = new CacheObject(jo);
+		jvnObjects.put(jo.jvnGetObjectId(), co);
 		// suppose que l'objet n'existe pas encore dans la liste TODO
-		jvnObjects.put(jo.jvnGetObjectId(), jo);
+		// jvnObjects.put(jo.jvnGetObjectId(), jo);
 		System.out.println("add object");
 
 		try {
@@ -130,16 +134,22 @@ public class JvnServerImpl
     // to be completed 
 			try {
 				if(hachNameId.containsValue(jon)) { // 
-					JvnObject obj = jvnObjects.get(hachNameId.get(jon));
-					if( ((ObjectEntryConsistency) obj).isLock()) {
+					// JvnObject obj = jvnObjects.get(hachNameId.get(jon));
+					CacheObject obj = jvnObjects.get(hachNameId.get(jon));
+					// if( ((ObjectEntryConsistency) obj).isLock()) {
+					if( ((ObjectEntryConsistency) obj.getJo()).isLock()) {
 						System.out.println("ERREUR");
-						return obj;
+						return obj.getJo();
+						// return obj;
 					}
 				}
 				System.out.println("Avant return ");
 				JvnObject objLookUp = server_coord.jvnLookupObject(jon, js);
+				CacheObject co = new CacheObject(objLookUp);
 				if(objLookUp != null) {
-					jvnObjects.put(objLookUp.jvnGetObjectId(), objLookUp);
+					// jvnObjects.put(objLookUp.jvnGetObjectId(), objLookUp);
+					jvnObjects.put(objLookUp.jvnGetObjectId(), co);
+
 				}
 				return objLookUp;
 			} catch (RemoteException e) {
@@ -169,6 +179,8 @@ public class JvnServerImpl
 		 try {
 			obj = server_coord.jvnLockRead(joi, js);
 			
+			jvnObjects.get(joi).setUsed(true);
+			
 			//if(findJvnObjectById(joi) == null) {
 				//System.out.println("ERREUR");
 				//jvnObjects.add(new ObjectEntryConsistency(joi, obj));
@@ -194,6 +206,8 @@ public class JvnServerImpl
 	   Serializable obj = null;
 	   try {
 		   	obj = server_coord.jvnLockWrite(joi, this);
+		   	
+		   	jvnObjects.get(joi).setUsed(true);
 			//if(findJvnObjectById(joi) == null) {
 				//System.out.println("ERREUR");
 				//jvnObjects.add(new ObjectEntryConsistency(joi, obj));
@@ -215,7 +229,11 @@ public class JvnServerImpl
 	**/
   public void jvnInvalidateReader(int joi)
 	throws java.rmi.RemoteException,jvn.JvnException {
-		jvnObjects.get(joi).jvnInvalidateReader();
+		// jvnObjects.get(joi).jvnInvalidateReader();
+	  CacheObject co = jvnObjects.get(joi);
+	  co.getJo().jvnInvalidateReader();
+	  co.setLastUnLock();
+	  co.setUsed(false);
 	  
 	};
 	    
@@ -228,7 +246,12 @@ public class JvnServerImpl
   public Serializable jvnInvalidateWriter(int joi)
 	throws java.rmi.RemoteException,jvn.JvnException { 
 		// to be completed 
-		return jvnObjects.get(joi).jvnInvalidateWriter();
+		// return jvnObjects.get(joi).jvnInvalidateWriter();
+	  CacheObject co = jvnObjects.get(joi);
+	  Serializable res = co.getJo().jvnInvalidateWriter();
+	  co.setLastUnLock();
+	  co.setUsed(false);
+	  return res;
 	};
 	
 	/**
@@ -240,7 +263,8 @@ public class JvnServerImpl
    public Serializable jvnInvalidateWriterForReader(int joi)
 	 throws java.rmi.RemoteException,jvn.JvnException { 
 		// to be completed 
-		return jvnObjects.get(joi).jvnInvalidateWriterForReader();
+		// return jvnObjects.get(joi).jvnInvalidateWriterForReader();
+	   return jvnObjects.get(joi).getJo().jvnInvalidateWriterForReader();
 	 };
 
 }
