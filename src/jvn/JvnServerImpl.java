@@ -39,9 +39,10 @@ public class JvnServerImpl
   **/
 	private JvnServerImpl() throws Exception {
 		super();
-		if(server_coord == null) {
+		while(server_coord == null) {
 			server_coord = (JvnRemoteCoord) Naming.lookup("//localhost:2045/Coordinateur");
 		}
+		System.out.println(server_coord);
 		this.hachNameId = new Hashtable<String, Integer>();
 		// this.jvnObjects = new Hashtable<Integer, JvnObject>();
 		this.jvnObjects = new Hashtable<Integer, CacheObject>();
@@ -53,7 +54,7 @@ public class JvnServerImpl
     * a JVN server instance
     * @throws JvnException
     **/
-	public static JvnServerImpl jvnGetServer() {
+	public synchronized static JvnServerImpl jvnGetServer() {
 		if (js == null){
 			try {
 				js = new JvnServerImpl();
@@ -134,9 +135,12 @@ public class JvnServerImpl
 	**/
 	public  JvnObject jvnLookupObject(String jon)
 	throws jvn.JvnException {
+		System.out.println("ca marche !!! call");
     // to be completed 
 			try {
-				if(hachNameId.containsValue(jon)) { // 
+				System.out.println("ca marche !!!");
+				if(hachNameId.containsValue(jon)) { //
+					System.out.println("ca marche !!!");
 					// JvnObject obj = jvnObjects.get(hachNameId.get(jon));
 					CacheObject obj = jvnObjects.get(hachNameId.get(jon));
 					// if( ((ObjectEntryConsistency) obj).isLock()) {

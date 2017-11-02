@@ -25,7 +25,7 @@ public class JvnCoordImpl
     private Hashtable<Integer, ObjectCoord> listObjectsById;
     private Hashtable<String, ObjectCoord> listObjectsByJon;
     
-    public static void main(String args[]){
+    public synchronized static void main(String args[]){
         try{
             JvnRemoteCoord coordinateur = new JvnCoordImpl();
             
@@ -67,7 +67,7 @@ public class JvnCoordImpl
   * @param js  : the remote reference of the JVNServer
   * @throws java.rmi.RemoteException,JvnException
   **/
-  public void jvnRegisterObject(String jon, JvnObject jo, JvnRemoteServer js)
+  public synchronized void jvnRegisterObject(String jon, JvnObject jo, JvnRemoteServer js)
   throws java.rmi.RemoteException,jvn.JvnException{
     // TODO : vérifier si le nom est unique
 	ObjectCoord objCoord = new ObjectCoord(jo);
@@ -85,7 +85,7 @@ public class JvnCoordImpl
   * @param js : the remote reference of the JVNServer
   * @throws java.rmi.RemoteException,JvnException
   **/
-  public JvnObject jvnLookupObject(String jon, JvnRemoteServer js)
+  public synchronized JvnObject jvnLookupObject(String jon, JvnRemoteServer js)
   throws java.rmi.RemoteException,jvn.JvnException{
 	System.out.println("Object cherché "+jon);
     if(listObjectsByJon.containsKey(jon)){

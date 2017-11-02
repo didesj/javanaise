@@ -13,8 +13,9 @@ public class JvnProxy implements InvocationHandler{
 	private JvnProxy(String name, Object obj) {
 		try {
 			JvnServerImpl js = JvnServerImpl.jvnGetServer();
+			System.out.println("ca marche !!!JvnProxy 1");
 			JvnObject jo = js.jvnLookupObject(name);
-			
+			System.out.println("ca marche !!!JvnProxy 2");
 			
 			if (jo == null) {
 				jo = js.jvnCreateObject((Serializable) obj);
@@ -32,7 +33,7 @@ public class JvnProxy implements InvocationHandler{
 			
 	}
 	
-	public static Object getOrNewInstance (String name, Object obj) {
+	public synchronized static Object getOrNewInstance (String name, Object obj) {
 		return Proxy.newProxyInstance(
 				obj.getClass().getClassLoader(),
 				obj.getClass().getInterfaces(),
@@ -45,7 +46,7 @@ public class JvnProxy implements InvocationHandler{
 		try {
 			if(method.isAnnotationPresent(LockType.class)) {
 				LockType lockType = method.getAnnotation(LockType.class);
-				System.out.println("La méthode " + method.getName() + " a comme lock \"" + lockType.lockType() + "\"");
+				//System.out.println("La méthode " + method.getName() + " a comme lock \"" + lockType.lockType() + "\"");
 				if(lockType.lockType().equals("read")) {
 					jo.jvnLockRead();
 				}

@@ -1,6 +1,8 @@
 package irc;
 
+import jvn.JvnCoordImpl;
 import jvn.JvnObject;
+import jvn.JvnProxy;
 import jvn.JvnServerImpl;
 
 import java.io.Serializable;
@@ -13,21 +15,57 @@ public class Burst {
 
 
 	public static void main(String argv[]) {
-		int nbr_client = 5;
-		ExecutorService executor = Executors.newFixedThreadPool(nbr_client);
+		int nbr_client = 1;
+		//ExecutorService executor = Executors.newFixedThreadPool(nbr_client);
 		//nbr_client = Integer.parseInt(argv[0]);
 		try {
+			
+		//ThreadCoord coord = new ThreadCoord();
+		//coord.start();
 		for(int i = 0; i< nbr_client;i ++) {
 			System.out.println("!!!");
 
-			ThreadClient t = new ThreadClient();
-			executor.execute(t);
+			ThreadClientJ2 t = new ThreadClientJ2(i);
+			t.start();
+			//executor.execute(t);
 		}
 		}catch(Exception e){
 			
 		}
 	}
 	
+}
+
+class ThreadCoord extends Thread {
+	public void run() {
+		JvnCoordImpl.main(null);
+	}
+}
+
+class ThreadClientJ2 extends Thread{
+	private int i;
+	public ThreadClientJ2(int i) {
+		this.i= i;
+	}
+	@Override
+	public void run() {
+		ISentence s = (ISentence) JvnProxy.getOrNewInstance("IRC", new Sentence());
+		Random rand;
+		int test;
+		while(true) {
+			rand = new Random();
+			test = rand.nextInt(2);
+			if(test == 1) {
+				s.write("bite");
+				System.out.println(i + " write : bite");
+			}
+			
+			if(test ==0) {
+				System.out.println(i + " read : " + s.read());
+			}
+
+		}
+	}
 }
  class ThreadClient extends Thread{
 	 JvnObject obj;
