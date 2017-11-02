@@ -13,7 +13,9 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -27,7 +29,9 @@ public class JvnServerImpl
     // private Hashtable<Integer, JvnObject> jvnObjects;
     private Hashtable<Integer, CacheObject> jvnObjects;
     private JvnRemoteCoord server_coord ;
-    private Hashtable<String, Integer> hachNameId; 
+    private Hashtable<String, Integer> hachNameId;
+    private static int nbr_objects =0;
+    private int size_cache = 10;
     		
   /**
   * Default constructor
@@ -99,8 +103,7 @@ public class JvnServerImpl
 	public  void jvnRegisterObject(String jon, JvnObject jo)
 	throws jvn.JvnException {
 		System.out.println("jo ?" + jo);
-		CacheObject co = new CacheObject(jo);
-		jvnObjects.put(jo.jvnGetObjectId(), co);
+		addObjectsInCache(jo);
 		// suppose que l'objet n'existe pas encore dans la liste TODO
 		// jvnObjects.put(jo.jvnGetObjectId(), jo);
 		System.out.println("add object");
@@ -148,8 +151,7 @@ public class JvnServerImpl
 				CacheObject co = new CacheObject(objLookUp);
 				if(objLookUp != null) {
 					// jvnObjects.put(objLookUp.jvnGetObjectId(), objLookUp);
-					jvnObjects.put(objLookUp.jvnGetObjectId(), co);
-
+					addObjectsInCache(objLookUp);
 				}
 				return objLookUp;
 			} catch (RemoteException e) {
@@ -266,6 +268,27 @@ public class JvnServerImpl
 		// return jvnObjects.get(joi).jvnInvalidateWriterForReader();
 	   return jvnObjects.get(joi).getJo().jvnInvalidateWriterForReader();
 	 };
+	 
+	 private void addObjectsInCache(JvnObject jo) throws JvnException {
+		 if(nbr_objects >= size_cache) {
+			 // delete un object
+			 Integer coMin = null;
+			 int i = 0;
+			 for (Enumeration<CacheObject> e = jvnObjects.elements(); e.hasMoreElements();) {
+				 if(i == 0) {
+					 coMin = e.nextElement().getJo().jvnGetObjectId();
+				 }
+				 else if(e.nextElement().getLastUnLock().compareTo(jvnObjects.get(coMin).getLastUnLock()) < 0) {
+					 coMin = e.nextElement().getJo().jvnGetObjectId();
+				 }
+			 }
+			  jvnObjects.remove(coMin) ;   	 
+		 }
+		 CacheObject co = new CacheObject(jo);
+		 jvnObjects.put(jo.jvnGetObjectId(), co);
+		 nbr_objects ++;
+	 }
+	 
 
 }
 
