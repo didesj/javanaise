@@ -71,7 +71,12 @@ public class JvnServerImpl
 	**/
 	public  void jvnTerminate()
 	throws jvn.JvnException {
-            // to be completed 
+            try {
+				server_coord.jvnTerminate(js);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	} 
 	
 	/**
@@ -195,7 +200,7 @@ public class JvnServerImpl
 
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			obj = jvnObjects.get(joi).getJo().jvnGetObjectState();
 		}
         
 	return obj;
@@ -220,7 +225,7 @@ public class JvnServerImpl
 			//}
 	} catch (RemoteException e) {
 		// TODO Auto-generated catch block
-		e.printStackTrace();
+		obj = jvnObjects.get(joi).getJo().jvnGetObjectState();
 	}
 		return obj;
 	}	

@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -121,8 +122,16 @@ public class JvnCoordImpl
     		System.out.println("Lock Read Coord");
         JvnRemoteServer serverLockWrite = obj.getServerGotLockWrite();
         System.out.println("le server demandeur == server avec le lock ? : " + (js == serverLockWrite));
-        objectMAJ = serverLockWrite.jvnInvalidateWriterForReader(joi);
-        obj.addServersGotLockRead(serverLockWrite);
+        try {
+	        Serializable objectMAJ1 = serverLockWrite.jvnInvalidateWriterForReader(joi);
+	        if(objectMAJ1 != null) {
+		    		objectMAJ = objectMAJ1;
+		    }
+	        obj.addServersGotLockRead(serverLockWrite);
+        }catch(Exception e) {
+        		
+        }
+        
         obj.setServerGotLockWriteNull();
         obj.setObj(new ObjectEntryConsistency(joi, objectMAJ));
     }
@@ -146,7 +155,14 @@ public class JvnCoordImpl
     if(obj.isServerLockWrite()){
     		System.out.println("Je met à jour la donnée !!!");
         JvnRemoteServer serverLockWrite = obj.getServerGotLockWrite();
-        objectMAJ = serverLockWrite.jvnInvalidateWriter(joi);
+        try {
+	        Serializable objectMAJ1 = serverLockWrite.jvnInvalidateWriter(joi);
+	        if(objectMAJ1 != null) {
+	        		objectMAJ = objectMAJ1;
+	        }
+	    }catch(Exception e) {
+			
+	    }
         obj.setServerGotLockWriteNull();
         obj.setObj(new ObjectEntryConsistency(joi, objectMAJ));
     }
@@ -170,7 +186,16 @@ public class JvnCoordImpl
 	**/
     public void jvnTerminate(JvnRemoteServer js)
 	 throws java.rmi.RemoteException, JvnException {
-	 // TODO : to be completed
+    		for (Enumeration<ObjectCoord> e = listObjectsById.elements(); e.hasMoreElements();) {
+    			ObjectCoord oc = e.nextElement();
+    			int joi = oc.getId();
+    			if(oc.isServerLockWrite() && oc.getServerGotLockWrite().equals(js)) {
+    				 oc.setObj(new ObjectEntryConsistency(joi, js.jvnInvalidateWriter(joi)));
+    			}
+    			if(oc.isServerLockRead() && oc.getServersGotLockRead().contains(js)) {
+    				js.jvnInvalidateReader(joi);
+    			}
+    		}
     }
 }
  
