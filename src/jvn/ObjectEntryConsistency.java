@@ -29,7 +29,7 @@ public class ObjectEntryConsistency implements JvnObject{
     @Override
     public synchronized void jvnLockRead() throws JvnException {
     	// R, W: err
-    		System.out.println("avant jvnLockRead valuOfLock : " + valueOfLock);
+    		//System.out.println("avant jvnLockRead valuOfLock : " + valueOfLock);
         if(valueOfLock == ValueOfLock.NL){
             // TODO : demander droits de la donnée o au coordinateur : jvnLockRead(id, JvnRemoteServer js)
             valueOfLock = ValueOfLock.R;
@@ -41,7 +41,7 @@ public class ObjectEntryConsistency implements JvnObject{
         else if (valueOfLock == ValueOfLock.WC || valueOfLock == ValueOfLock.W){
             valueOfLock = ValueOfLock.RWC;
         }
-        System.out.println("après jvnLockRead valuOfLock : " + valueOfLock);
+        //System.out.println("après jvnLockRead valuOfLock : " + valueOfLock);
         // TODO : demander dernière version de la donnée o au coordinateur
 
         // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -49,7 +49,7 @@ public class ObjectEntryConsistency implements JvnObject{
 
     @Override
     public synchronized void jvnLockWrite() throws JvnException {
-    		System.out.println("avant jvnLockWrite valuOfLock : " + valueOfLock);
+    		//System.out.println("avant jvnLockWrite valuOfLock : " + valueOfLock);
         if(valueOfLock == ValueOfLock.NL){
             // TODO : demander droits de la donnée o au coordinateur
            	o = JvnServerImpl.jvnGetServer().jvnLockWrite(id);
@@ -63,14 +63,14 @@ public class ObjectEntryConsistency implements JvnObject{
         else if (valueOfLock == ValueOfLock.WC || valueOfLock == ValueOfLock.W){
             valueOfLock = ValueOfLock.W;
         }
-        System.out.println("après jvnLockWrite valuOfLock : " + valueOfLock);
+        //System.out.println("après jvnLockWrite valuOfLock : " + valueOfLock);
         // TODO : demander dernière version de la donnée o au coordinateur
         // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public synchronized void jvnUnLock() throws JvnException {
-    		System.out.println("avant jvnUnLock valuOfLock : " + valueOfLock);
+    		//System.out.println("avant jvnUnLock valuOfLock : " + valueOfLock);
         if (valueOfLock == ValueOfLock.R){
             valueOfLock = ValueOfLock.RC;
         }
@@ -80,7 +80,7 @@ public class ObjectEntryConsistency implements JvnObject{
         else if (valueOfLock == ValueOfLock.RWC){
             valueOfLock = ValueOfLock.WC;
         }
-        System.out.println("après jvnUnLock valuOfLock : " + valueOfLock);
+        //System.out.println("après jvnUnLock valuOfLock : " + valueOfLock);
         notifyAll();
         // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -99,7 +99,7 @@ public class ObjectEntryConsistency implements JvnObject{
 
     @Override
     public synchronized void jvnInvalidateReader() throws JvnException {
-    		System.out.println("avant jvnInvalidateReader valuOfLock : " + valueOfLock);
+    		//System.out.println("avant jvnInvalidateReader valuOfLock : " + valueOfLock);
         if (valueOfLock == ValueOfLock.RC){
             valueOfLock = ValueOfLock.NL;
         }
@@ -112,13 +112,13 @@ public class ObjectEntryConsistency implements JvnObject{
 			}
             valueOfLock = ValueOfLock.NL;
         }
-        System.out.println("après jvnInvalidateReader valuOfLock : " + valueOfLock);
+        //System.out.println("après jvnInvalidateReader valuOfLock : " + valueOfLock);
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public synchronized Serializable jvnInvalidateWriter() throws JvnException {
-    		System.out.println("avant jvnInvalidateWriter valuOfLock : " + valueOfLock);
+    		//System.out.println("avant jvnInvalidateWriter valuOfLock : " + valueOfLock);
         if (valueOfLock == ValueOfLock.WC || valueOfLock == ValueOfLock.RC){
             valueOfLock = ValueOfLock.NL;
         }
@@ -132,14 +132,14 @@ public class ObjectEntryConsistency implements JvnObject{
             valueOfLock = ValueOfLock.NL;
         }
         //o = JvnServerImpl.jvnGetServer().jvnLockWrite(id);
-        System.out.println("après jvnInvalidateWriter valuOfLock : " + valueOfLock);
+        //System.out.println("après jvnInvalidateWriter valuOfLock : " + valueOfLock);
         return o;
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
  
     @Override
     public synchronized Serializable jvnInvalidateWriterForReader() throws JvnException {
-    		System.out.println("avant jvnInvalidateWriterForReader valuOfLock : " + valueOfLock);
+    		//System.out.println("avant jvnInvalidateWriterForReader valuOfLock : " + valueOfLock);
         if (valueOfLock == ValueOfLock.RWC){
             valueOfLock = ValueOfLock.R;
         }
@@ -156,7 +156,7 @@ public class ObjectEntryConsistency implements JvnObject{
         		valueOfLock = ValueOfLock.RC;
         }
         //o = JvnServerImpl.jvnGetServer().jvnLockRead(id);
-        System.out.println("après jvnInvalidateWriterForReader valuOfLock : " + valueOfLock);
+        //System.out.println("après jvnInvalidateWriterForReader valuOfLock : " + valueOfLock);
         return o;
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

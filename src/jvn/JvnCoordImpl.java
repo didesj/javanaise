@@ -142,6 +142,7 @@ public class JvnCoordImpl
 	   System.out.println("jvnLockWrite du coordinateur");
     ObjectCoord obj = listObjectsById.get(joi);
     Serializable objectMAJ = obj.getObj().jvnGetObjectState();
+    System.out.println("js avec lockwrite : " + obj.isServerLockWrite());
     if(obj.isServerLockWrite()){
     		System.out.println("Je met à jour la donnée !!!");
         JvnRemoteServer serverLockWrite = obj.getServerGotLockWrite();
