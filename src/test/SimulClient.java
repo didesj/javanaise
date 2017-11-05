@@ -7,19 +7,26 @@ import irc.Sentence;
 import jvn.JvnProxy;
 
 public class SimulClient {
-	private static int i;
+	private static int idClient;
+	private static int nbObjects;
 
 	public synchronized static void main(String args []) {
-		i = Integer.parseInt(args[0]);
-		ISentence s1 = (ISentence) JvnProxy.getOrNewInstance("IRC1", new Sentence());
-		ISentence s2 = (ISentence) JvnProxy.getOrNewInstance("IRC2", new Sentence());
+		idClient = Integer.parseInt(args[0]);
+		nbObjects = Integer.parseInt(args[1]);
+		ISentence[] tabObjects = new ISentence[nbObjects];
+		for(int i = 0; i < nbObjects; i++) {
+			tabObjects[i] = (ISentence) JvnProxy.getOrNewInstance("IRC"+i, new Sentence());
+		}
 		Random rand1;
 		Random rand2;
 		int randReadWrite;
-		int randIRC1_2;
+		int randIRC;
+		int randSleep;
 		for(int j = 0; j< 1000; j++) {
 			try {
-				Thread.sleep(1);
+				rand1 = new Random();
+				randSleep = rand1.nextInt(900) + 100;
+				Thread.sleep(randSleep);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -27,25 +34,14 @@ public class SimulClient {
 			rand1 = new Random();
 			rand2 = new Random();
 			randReadWrite = rand1.nextInt(2);
-			randIRC1_2 = rand2.nextInt(2);
+			randIRC = rand2.nextInt(nbObjects);
 			if(randReadWrite == 1) {
-				if(randIRC1_2 == 1) {
-					s1.write("IRC1 : test de " + i);
-					System.out.println( i + " test de " + i + ". sur IRC1");
-				}
-				else if(randIRC1_2 == 0) {
-					s2.write("IRC2 : test de " + i);
-					System.out.println( i + " test de " + i + ". sur IRC2");
-				}
+				tabObjects[randIRC].write("IRC"+randIRC+" : test de " + idClient);
+				System.out.println("write : \"" + idClient + " test de " + idClient + ". sur IRC"+randIRC + "\"");
 			}
 			
 			if(randReadWrite ==0) {
-				if(randIRC1_2 == 1) {
-					System.out.println(i + "IRC1 read : " + s1.read());
-				}
-				else if(randIRC1_2 == 0) {
-					System.out.println(i + "IRC2 read : " + s2.read());
-				}
+				System.out.println(idClient + "IRC"+randIRC+" read : \"" + tabObjects[randIRC].read() +"\"");
 			}
 
 		}

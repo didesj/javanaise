@@ -3,24 +3,15 @@
 
 
 echo "le nombre de clients testés : "
-read nombre
+read nombreClients
+echo "le nombre d'objets partagés : "
+read nombreObjects
 java -cp ./build/ jvn.JvnCoordImpl &
 
 sleep 10
 
-#java -cp ./build/ test.SimulClient 1 &
-
-#sleep 1
-
-#java -cp ./build/ test.SimulClient 2 &
-
-#sleep 1
-
-#java -cp ./build/ test.SimulClient 3 &
-
-
-for i in `seq 1 $nombre`
+for i in `seq 1 $nombreClients`
 do
-	java -cp ./build/ test.SimulClient $i &
+	java -cp ./build/ test.SimulClient $i $nombreObjects &
 	sleep 1
 done

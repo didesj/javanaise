@@ -115,13 +115,13 @@ public class JvnCoordImpl
   **/
    public Serializable jvnLockRead(int joi, JvnRemoteServer js)
    throws java.rmi.RemoteException, JvnException{
-		System.out.println("jvnLockRead du coordianteur");
+		//System.out.println("jvnLockRead du coordianteur");
     ObjectCoord obj = listObjectsById.get(joi);
     Serializable objectMAJ = obj.getObj().jvnGetObjectState();
     if(obj.isServerLockWrite()){
-    		System.out.println("Lock Read Coord");
+    		//System.out.println("Lock Read Coord");
         JvnRemoteServer serverLockWrite = obj.getServerGotLockWrite();
-        System.out.println("le server demandeur == server avec le lock ? : " + (js == serverLockWrite));
+       // System.out.println("le server demandeur == server avec le lock ? : " + (js == serverLockWrite));
         try {
 	        Serializable objectMAJ1 = serverLockWrite.jvnInvalidateWriterForReader(joi);
 	        if(objectMAJ1 != null) {
@@ -148,10 +148,10 @@ public class JvnCoordImpl
   **/
    public Serializable jvnLockWrite(int joi, JvnRemoteServer js)
    throws java.rmi.RemoteException, JvnException{
-	   System.out.println("jvnLockWrite du coordinateur");
+	  // System.out.println("jvnLockWrite du coordinateur");
     ObjectCoord obj = listObjectsById.get(joi);
     Serializable objectMAJ = obj.getObj().jvnGetObjectState();
-    System.out.println("js avec lockwrite : " + obj.isServerLockWrite());
+   // System.out.println("js avec lockwrite : " + obj.isServerLockWrite());
     if(obj.isServerLockWrite()){
     		System.out.println("Je met à jour la donnée !!!");
         JvnRemoteServer serverLockWrite = obj.getServerGotLockWrite();

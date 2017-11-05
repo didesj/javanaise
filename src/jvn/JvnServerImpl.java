@@ -140,12 +140,9 @@ public class JvnServerImpl
 	**/
 	public  JvnObject jvnLookupObject(String jon)
 	throws jvn.JvnException {
-		System.out.println("ca marche !!! call");
     // to be completed 
 			try {
-				System.out.println("ca marche !!!");
 				if(hachNameId.containsValue(jon)) { //
-					System.out.println("ca marche !!!");
 					// JvnObject obj = jvnObjects.get(hachNameId.get(jon));
 					CacheObject obj = jvnObjects.get(hachNameId.get(jon));
 					// if( ((ObjectEntryConsistency) obj).isLock()) {
@@ -183,10 +180,10 @@ public class JvnServerImpl
 	 throws JvnException {
 		// to be completed
 
-   	System.out.println("jvnLockRead dans serveur");
+   	//System.out.println("jvnLockRead dans serveur");
 
 	   Serializable obj = null ; 
-	   System.out.println("Coordinateur : "+ server_coord);
+	   //System.out.println("Coordinateur : "+ server_coord);
 		 try {
 			obj = server_coord.jvnLockRead(joi, js);
 			
@@ -196,7 +193,7 @@ public class JvnServerImpl
 				//System.out.println("ERREUR");
 				//jvnObjects.add(new ObjectEntryConsistency(joi, obj));
 			//}
-			   System.out.println("Coordinateur Try : "+obj);
+			   //System.out.println("Coordinateur Try : "+obj);
 
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
