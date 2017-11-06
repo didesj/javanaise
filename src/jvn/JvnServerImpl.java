@@ -26,7 +26,6 @@ public class JvnServerImpl
 	
   // A JVN server is managed as a singleton 
 	private static JvnServerImpl js = null;
-    // private Hashtable<Integer, JvnObject> jvnObjects;
     private Hashtable<Integer, CacheObject> jvnObjects;
     private JvnRemoteCoord server_coord ;
     private Hashtable<String, Integer> hachNameId;
@@ -44,9 +43,7 @@ public class JvnServerImpl
 		}
 		System.out.println(server_coord);
 		this.hachNameId = new Hashtable<String, Integer>();
-		// this.jvnObjects = new Hashtable<Integer, JvnObject>();
 		this.jvnObjects = new Hashtable<Integer, CacheObject>();
-		// to be completed
 	}
 	
   /**
@@ -94,9 +91,6 @@ public class JvnServerImpl
 				e.printStackTrace();
 			}
             JvnObject jvnObject = new ObjectEntryConsistency(id, o);
-            //server
-            // to be complet	ed 
-            
             return jvnObject; 
 	}
 	
@@ -110,8 +104,6 @@ public class JvnServerImpl
 	throws jvn.JvnException {
 		System.out.println("jo ?" + jo);
 		addObjectsInCache(jo);
-		// suppose que l'objet n'existe pas encore dans la liste TODO
-		// jvnObjects.put(jo.jvnGetObjectId(), jo);
 		System.out.println("add object");
 
 		try {
@@ -129,7 +121,6 @@ public class JvnServerImpl
 		int id_objet = jo.jvnGetObjectId();
 		
 		hachNameId.put(jon,id_objet);
-		// to be completed 
 	}
 	
 	/**
@@ -143,20 +134,16 @@ public class JvnServerImpl
     // to be completed 
 			try {
 				if(hachNameId.containsValue(jon)) { //
-					// JvnObject obj = jvnObjects.get(hachNameId.get(jon));
 					CacheObject obj = jvnObjects.get(hachNameId.get(jon));
-					// if( ((ObjectEntryConsistency) obj).isLock()) {
 					if( ((ObjectEntryConsistency) obj.getJo()).isLock()) {
 						System.out.println("ERREUR");
 						return obj.getJo();
-						// return obj;
 					}
 				}
 				System.out.println("Avant return ");
 				JvnObject objLookUp = server_coord.jvnLookupObject(jon, js);
 				CacheObject co = new CacheObject(objLookUp);
 				if(objLookUp != null) {
-					// jvnObjects.put(objLookUp.jvnGetObjectId(), objLookUp);
 					addObjectsInCache(objLookUp);
 				}
 				return objLookUp;
@@ -179,22 +166,11 @@ public class JvnServerImpl
    public Serializable jvnLockRead(int joi)
 	 throws JvnException {
 		// to be completed
-
-   	//System.out.println("jvnLockRead dans serveur");
-
 	   Serializable obj = null ; 
-	   //System.out.println("Coordinateur : "+ server_coord);
 		 try {
 			obj = server_coord.jvnLockRead(joi, js);
 			
 			jvnObjects.get(joi).setUsed(true);
-			
-			//if(findJvnObjectById(joi) == null) {
-				//System.out.println("ERREUR");
-				//jvnObjects.add(new ObjectEntryConsistency(joi, obj));
-			//}
-			   //System.out.println("Coordinateur Try : "+obj);
-
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			obj = jvnObjects.get(joi).getJo().jvnGetObjectState();
@@ -216,10 +192,6 @@ public class JvnServerImpl
 		   	obj = server_coord.jvnLockWrite(joi, this);
 		   	
 		   	jvnObjects.get(joi).setUsed(true);
-			//if(findJvnObjectById(joi) == null) {
-				//System.out.println("ERREUR");
-				//jvnObjects.add(new ObjectEntryConsistency(joi, obj));
-			//}
 	} catch (RemoteException e) {
 		// TODO Auto-generated catch block
 		obj = jvnObjects.get(joi).getJo().jvnGetObjectState();
@@ -237,7 +209,6 @@ public class JvnServerImpl
 	**/
   public void jvnInvalidateReader(int joi)
 	throws java.rmi.RemoteException,jvn.JvnException {
-		// jvnObjects.get(joi).jvnInvalidateReader();
 	  CacheObject co = jvnObjects.get(joi);
 	  co.getJo().jvnInvalidateReader();
 	  co.setLastUnLock();
@@ -253,8 +224,6 @@ public class JvnServerImpl
 	**/
   public Serializable jvnInvalidateWriter(int joi)
 	throws java.rmi.RemoteException,jvn.JvnException { 
-		// to be completed 
-		// return jvnObjects.get(joi).jvnInvalidateWriter();
 	  CacheObject co = jvnObjects.get(joi);
 	  Serializable res = co.getJo().jvnInvalidateWriter();
 	  co.setLastUnLock();
@@ -270,8 +239,6 @@ public class JvnServerImpl
 	**/
    public Serializable jvnInvalidateWriterForReader(int joi)
 	 throws java.rmi.RemoteException,jvn.JvnException { 
-		// to be completed 
-		// return jvnObjects.get(joi).jvnInvalidateWriterForReader();
 	   return jvnObjects.get(joi).getJo().jvnInvalidateWriterForReader();
 	 };
 	 

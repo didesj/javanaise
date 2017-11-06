@@ -18,7 +18,7 @@ exemple : ISentence sentence = (ISentence) JvnProxy.getOrNewInstance("IRC"+i, ne
 
 
 Le burst, est fonctionnel et permet de choisir le nombre de client et d'objets partagés. Donc, nous avons ajouté un temps d'attente (sleep) .Ensuite, afin d'exécuter ce test, nous avons écrit un script shell qui permet de lancer le coordinateur et les clients, l'ID de chaque client est passé en paramètre 
-Pour le fichier burst.sh il faut préciser le dossier qui contiens les fichier class (à la place de ./build/)
+Pour le fichier burst.sh il faut préciser le dossier qui contient les fichier class (à la place de ./build/)
 
 
 Pour l'extension du javanaise2 : 

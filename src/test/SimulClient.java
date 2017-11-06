@@ -28,7 +28,6 @@ public class SimulClient {
 				randSleep = rand1.nextInt(900) + 100;
 				Thread.sleep(randSleep);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			rand1 = new Random();

@@ -70,11 +70,10 @@ public class JvnCoordImpl
   **/
   public synchronized void jvnRegisterObject(String jon, JvnObject jo, JvnRemoteServer js)
   throws java.rmi.RemoteException,jvn.JvnException{
-    // TODO : vérifier si le nom est unique
+    //vérifier si le nom est unique
 	ObjectCoord objCoord = new ObjectCoord(jo);
 	listObjectsById.put(jo.jvnGetObjectId(), objCoord);
 	listObjectsByJon.put(jon, objCoord);
-    //listObjects.add(new ObjectCoord(jon, jo));
 	System.out.println("Registrer Object ");
 
   }
@@ -115,13 +114,10 @@ public class JvnCoordImpl
   **/
    public Serializable jvnLockRead(int joi, JvnRemoteServer js)
    throws java.rmi.RemoteException, JvnException{
-		//System.out.println("jvnLockRead du coordianteur");
     ObjectCoord obj = listObjectsById.get(joi);
     Serializable objectMAJ = obj.getObj().jvnGetObjectState();
     if(obj.isServerLockWrite()){
-    		//System.out.println("Lock Read Coord");
         JvnRemoteServer serverLockWrite = obj.getServerGotLockWrite();
-       // System.out.println("le server demandeur == server avec le lock ? : " + (js == serverLockWrite));
         try {
 	        Serializable objectMAJ1 = serverLockWrite.jvnInvalidateWriterForReader(joi);
 	        if(objectMAJ1 != null) {
@@ -148,10 +144,8 @@ public class JvnCoordImpl
   **/
    public Serializable jvnLockWrite(int joi, JvnRemoteServer js)
    throws java.rmi.RemoteException, JvnException{
-	  // System.out.println("jvnLockWrite du coordinateur");
     ObjectCoord obj = listObjectsById.get(joi);
     Serializable objectMAJ = obj.getObj().jvnGetObjectState();
-   // System.out.println("js avec lockwrite : " + obj.isServerLockWrite());
     if(obj.isServerLockWrite()){
     		System.out.println("Je met à jour la donnée !!!");
         JvnRemoteServer serverLockWrite = obj.getServerGotLockWrite();
@@ -168,7 +162,6 @@ public class JvnCoordImpl
     }
     if(obj.isServerLockRead()){
         for(JvnRemoteServer jrs : obj.getServersGotLockRead()){
-        		// System.out.println("le serveur qui veux le lockWrite veux s'invalider e lockRead : "+ !(jrs.equals(js))); 
         		if(!(jrs.equals(js))) {
         			jrs.jvnInvalidateReader(joi);
         		}
