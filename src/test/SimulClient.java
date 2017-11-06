@@ -37,7 +37,7 @@ public class SimulClient {
 			randIRC = rand2.nextInt(nbObjects);
 			if(randReadWrite == 1) {
 				tabObjects[randIRC].write("IRC"+randIRC+" : test de " + idClient);
-				System.out.println("write : \"" + idClient + " test de " + idClient + ". sur IRC"+randIRC + "\"");
+				System.out.println("write : \" test de " + idClient + ". sur IRC"+randIRC + "\"");
 			}
 			
 			if(randReadWrite ==0) {

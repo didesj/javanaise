@@ -13,13 +13,10 @@ public class JvnProxy implements InvocationHandler{
 	private JvnProxy(String name, Object obj) {
 		try {
 			JvnServerImpl js = JvnServerImpl.jvnGetServer();
-			System.out.println("ca marche !!!JvnProxy 1");
 			JvnObject jo = js.jvnLookupObject(name);
-			System.out.println("ca marche !!!JvnProxy 2");
 			
 			if (jo == null) {
 				jo = js.jvnCreateObject((Serializable) obj);
-				// after creation, I have a write lock on the object
 				jo.jvnUnLock();
 				js.jvnRegisterObject(name, jo);
 	
@@ -46,7 +43,6 @@ public class JvnProxy implements InvocationHandler{
 		try {
 			if(method.isAnnotationPresent(LockType.class)) {
 				LockType lockType = method.getAnnotation(LockType.class);
-				//System.out.println("La méthode " + method.getName() + " a comme lock \"" + lockType.lockType() + "\"");
 				if(lockType.lockType().equals("read")) {
 					jo.jvnLockRead();
 				}
@@ -54,12 +50,12 @@ public class JvnProxy implements InvocationHandler{
 					jo.jvnLockWrite();
 				}
 				else {
-					// Erreur à gérer
+					// Gestion d'erreur
 					jo.jvnLockWrite();
 				}
 			}
 			else {
-				// Erreur à gérer
+				// Gestion d'erreur
 				jo.jvnLockWrite();
 			}
 			result = method.invoke(jo.jvnGetObjectState(), args);
