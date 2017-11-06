@@ -133,7 +133,7 @@ public class JvnServerImpl
 	throws jvn.JvnException {
     // to be completed 
 			try {
-				if(hachNameId.containsValue(jon)) { //
+				if(hachNameId.containsValue(jon)) {
 					CacheObject obj = jvnObjects.get(hachNameId.get(jon));
 					if( ((ObjectEntryConsistency) obj.getJo()).isLock()) {
 						System.out.println("ERREUR");
@@ -169,7 +169,9 @@ public class JvnServerImpl
 	   Serializable obj = null ; 
 		 try {
 			obj = server_coord.jvnLockRead(joi, js);
-			
+			if(!jvnObjects.containsKey(joi)) {
+				addObjectsInCache(new ObjectEntryConsistency(joi, obj));
+			}
 			jvnObjects.get(joi).setUsed(true);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -190,7 +192,9 @@ public class JvnServerImpl
 	   Serializable obj = null;
 	   try {
 		   	obj = server_coord.jvnLockWrite(joi, this);
-		   	
+		   	if(!jvnObjects.containsKey(joi)) {
+				addObjectsInCache(new ObjectEntryConsistency(joi, obj));
+			}
 		   	jvnObjects.get(joi).setUsed(true);
 	} catch (RemoteException e) {
 		// TODO Auto-generated catch block
